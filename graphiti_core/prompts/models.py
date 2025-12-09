@@ -21,12 +21,28 @@ from pydantic import BaseModel
 
 
 class Message(BaseModel):
+    """
+    提示词消息的基础模型
+    
+    用途: 表示 LLM 提示词中的一条消息
+    字段:
+        role: 消息角色（'system' 或 'user'）
+        content: 消息内容
+    """
     role: str
     content: str
 
 
 class PromptVersion(Protocol):
+    """
+    提示词版本的协议定义
+    
+    用途: 定义提示词函数的标准接口
+    签名: (context: dict[str, Any]) -> list[Message]
+    """
     def __call__(self, context: dict[str, Any]) -> list[Message]: ...
 
 
+# 提示词函数的类型别名
+# 用途: 表示一个接受上下文字典并返回消息列表的函数
 PromptFunction = Callable[[dict[str, Any]], list[Message]]

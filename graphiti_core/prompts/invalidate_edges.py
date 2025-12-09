@@ -39,6 +39,18 @@ class Versions(TypedDict):
 
 
 def v1(context: dict[str, Any]) -> list[Message]:
+    """
+    基于新边判断哪些现有边应该失效（基于时间戳）
+    
+    用途: 根据新边和现有边的时间戳，判断哪些现有关系应该被标记为失效
+    输入:
+        context['previous_episodes']: 历史消息列表
+        context['current_episode']: 当前消息
+        context['existing_edges']: 现有边列表（按时间戳排序，最新的在前）
+        context['new_edges']: 新提取的边列表
+    输出: Message 列表，包含系统提示和用户提示
+    使用场景: 关系失效检测（基于时间戳和矛盾关系）
+    """
     return [
         Message(
             role='system',
@@ -71,6 +83,16 @@ def v1(context: dict[str, Any]) -> list[Message]:
 
 
 def v2(context: dict[str, Any]) -> list[Message]:
+    """
+    基于新事实判断哪些现有事实被矛盾（基于矛盾检测）
+    
+    用途: 根据新事实判断哪些现有事实被矛盾，需要被标记为失效
+    输入:
+        context['existing_edges']: 现有事实列表
+        context['new_edge']: 新提取的事实
+    输出: Message 列表，包含系统提示和用户提示
+    使用场景: 关系失效检测（基于矛盾关系）
+    """
     return [
         Message(
             role='system',

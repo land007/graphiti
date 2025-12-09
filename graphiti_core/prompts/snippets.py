@@ -14,6 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+# 摘要生成的通用指导原则
+# 用途: 被多个摘要相关提示词引用，确保摘要生成的一致性和质量
+# 使用场景: extract_summary, summarize_context 等函数
 summary_instructions = """Guidelines:
         1. Output only factual content. Never explain what you're doing, why, or mention limitations/constraints. 
         2. Only use the provided messages, entity, and entity context to set attribute values.

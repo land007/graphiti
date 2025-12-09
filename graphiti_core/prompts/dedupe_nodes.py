@@ -55,6 +55,19 @@ class Versions(TypedDict):
 
 
 def node(context: dict[str, Any]) -> list[Message]:
+    """
+    判断单个新实体是否为现有实体的重复
+    
+    用途: 判断新提取的实体是否与现有实体重复
+    输入:
+        context['previous_episodes']: 历史消息列表
+        context['episode_content']: 当前消息内容
+        context['extracted_node']: 新提取的实体
+        context['entity_type_description']: 实体类型描述
+        context['existing_nodes']: 现有实体列表
+    输出: Message 列表，包含系统提示和用户提示
+    使用场景: 单个实体去重判断
+    """
     return [
         Message(
             role='system',
@@ -115,6 +128,18 @@ def node(context: dict[str, Any]) -> list[Message]:
 
 
 def nodes(context: dict[str, Any]) -> list[Message]:
+    """
+    批量判断多个实体是否为现有实体的重复
+    
+    用途: 批量判断多个新提取的实体是否与现有实体重复
+    输入:
+        context['previous_episodes']: 历史消息列表
+        context['episode_content']: 当前消息内容
+        context['extracted_nodes']: 新提取的实体列表
+        context['existing_nodes']: 现有实体列表
+    输出: Message 列表，包含系统提示和用户提示
+    使用场景: 批量实体去重判断
+    """
     return [
         Message(
             role='system',
@@ -186,6 +211,15 @@ def nodes(context: dict[str, Any]) -> list[Message]:
 
 
 def node_list(context: dict[str, Any]) -> list[Message]:
+    """
+    对实体列表进行去重和合并
+    
+    用途: 对实体列表进行去重，合并重复实体并生成合并后的摘要
+    输入:
+        context['nodes']: 实体列表（包含 UUID 和摘要）
+    输出: Message 列表，包含系统提示和用户提示
+    使用场景: 实体列表去重和摘要合并
+    """
     return [
         Message(
             role='system',

@@ -45,6 +45,20 @@ from .summarize_nodes import versions as summarize_nodes_versions
 
 
 class PromptLibrary(Protocol):
+    """
+    提示词库的协议定义
+    
+    用途: 定义提示词库的标准接口，包含所有提示词类型
+    包含的提示词类型:
+        extract_nodes: 节点提取提示词
+        dedupe_nodes: 节点去重提示词
+        extract_edges: 边提取提示词
+        dedupe_edges: 边去重提示词
+        invalidate_edges: 边失效提示词
+        extract_edge_dates: 边日期提取提示词
+        summarize_nodes: 节点摘要提示词
+        eval: 评估相关提示词
+    """
     extract_nodes: ExtractNodesPrompt
     dedupe_nodes: DedupeNodesPrompt
     extract_edges: ExtractEdgesPrompt
@@ -67,36 +81,61 @@ class PromptLibraryImpl(TypedDict):
 
 
 class VersionWrapper:
+    """
+    提示词版本包装器
+    
+    用途: 包装提示词函数，自动为系统提示词添加 Unicode 不转义指令
+    """
     def __init__(self, func: PromptFunction):
         self.func = func
 
     def __call__(self, context: dict[str, Any]) -> list[Message]:
         messages = self.func(context)
+        # 为系统提示词添加 Unicode 不转义指令
         for message in messages:
             message.content += DO_NOT_ESCAPE_UNICODE if message.role == 'system' else ''
         return messages
 
 
 class PromptTypeWrapper:
+    """
+    提示词类型包装器
+    
+    用途: 包装同一类型的多个版本提示词（如 v1, v2）
+    """
     def __init__(self, versions: dict[str, PromptFunction]):
         for version, func in versions.items():
             setattr(self, version, VersionWrapper(func))
 
 
 class PromptLibraryWrapper:
+    """
+    提示词库包装器
+    
+    用途: 统一管理所有提示词类型，提供统一的访问接口
+    使用方式:
+        prompt_library.extract_nodes.extract_message(context)
+        prompt_library.dedupe_nodes.node(context)
+    """
     def __init__(self, library: PromptLibraryImpl):
         for prompt_type, versions in library.items():
             setattr(self, prompt_type, PromptTypeWrapper(versions))  # type: ignore[arg-type]
 
 
+# 提示词库实现
+# 用途: 将所有提示词类型和版本组织在一起
 PROMPT_LIBRARY_IMPL: PromptLibraryImpl = {
-    'extract_nodes': extract_nodes_versions,
-    'dedupe_nodes': dedupe_nodes_versions,
-    'extract_edges': extract_edges_versions,
-    'dedupe_edges': dedupe_edges_versions,
-    'invalidate_edges': invalidate_edges_versions,
-    'extract_edge_dates': extract_edge_dates_versions,
-    'summarize_nodes': summarize_nodes_versions,
-    'eval': eval_versions,
+    'extract_nodes': extract_nodes_versions,      # 节点提取提示词
+    'dedupe_nodes': dedupe_nodes_versions,        # 节点去重提示词
+    'extract_edges': extract_edges_versions,      # 边提取提示词
+    'dedupe_edges': dedupe_edges_versions,        # 边去重提示词
+    'invalidate_edges': invalidate_edges_versions,  # 边失效提示词
+    'extract_edge_dates': extract_edge_dates_versions,  # 边日期提取提示词
+    'summarize_nodes': summarize_nodes_versions,   # 节点摘要提示词
+    'eval': eval_versions,                        # 评估相关提示词
 }
+
+# 提示词库统一入口
+# 用途: 通过此对象访问所有提示词函数
+# 示例: prompt_library.extract_nodes.extract_message(context)
 prompt_library: PromptLibrary = PromptLibraryWrapper(PROMPT_LIBRARY_IMPL)  # type: ignore[assignment]

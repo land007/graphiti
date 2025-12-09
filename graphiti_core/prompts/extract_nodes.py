@@ -84,6 +84,18 @@ class Versions(TypedDict):
 
 
 def extract_message(context: dict[str, Any]) -> list[Message]:
+    """
+    从对话消息中提取实体节点
+    
+    用途: 从对话格式的消息中提取实体节点，包括说话者和其他重要实体
+    输入:
+        context['entity_types']: 实体类型定义列表
+        context['previous_episodes']: 历史消息列表（用于上下文）
+        context['episode_content']: 当前消息内容
+        context['custom_prompt']: 自定义提示词（可选）
+    输出: Message 列表，包含系统提示和用户提示
+    使用场景: 处理对话格式的输入数据
+    """
     sys_prompt = """You are an AI assistant that extracts entity nodes from conversational messages. 
     Your primary task is to extract and classify the speaker and other significant entities mentioned in the conversation."""
 
@@ -133,6 +145,18 @@ reference entities. Only extract distinct entities from the CURRENT MESSAGE. Don
 
 
 def extract_json(context: dict[str, Any]) -> list[Message]:
+    """
+    从 JSON 数据中提取实体节点
+    
+    用途: 从结构化 JSON 数据中提取相关实体节点
+    输入:
+        context['entity_types']: 实体类型定义列表
+        context['source_description']: 数据源描述
+        context['episode_content']: JSON 数据内容
+        context['custom_prompt']: 自定义提示词（可选）
+    输出: Message 列表，包含系统提示和用户提示
+    使用场景: 处理结构化 JSON 数据输入
+    """
     sys_prompt = """You are an AI assistant that extracts entity nodes from JSON. 
     Your primary task is to extract and classify relevant entities from JSON files"""
 
@@ -166,6 +190,17 @@ Guidelines:
 
 
 def extract_text(context: dict[str, Any]) -> list[Message]:
+    """
+    从纯文本中提取实体节点
+    
+    用途: 从普通文本内容中提取实体节点
+    输入:
+        context['entity_types']: 实体类型定义列表
+        context['episode_content']: 文本内容
+        context['custom_prompt']: 自定义提示词（可选）
+    输出: Message 列表，包含系统提示和用户提示
+    使用场景: 处理普通文本输入
+    """
     sys_prompt = """You are an AI assistant that extracts entity nodes from text. 
     Your primary task is to extract and classify the speaker and other significant entities mentioned in the provided text."""
 
@@ -197,6 +232,17 @@ Guidelines:
 
 
 def reflexion(context: dict[str, Any]) -> list[Message]:
+    """
+    检查是否有遗漏的实体未提取（反思机制）
+    
+    用途: 检查实体提取的完整性，找出可能遗漏的实体
+    输入:
+        context['previous_episodes']: 历史消息列表
+        context['episode_content']: 当前消息内容
+        context['extracted_entities']: 已提取的实体列表
+    输出: Message 列表，包含系统提示和用户提示
+    使用场景: 实体提取质量检查和改进
+    """
     sys_prompt = """You are an AI assistant that determines which entities have not been extracted from the given context"""
 
     user_prompt = f"""
@@ -221,6 +267,18 @@ extracted.
 
 
 def classify_nodes(context: dict[str, Any]) -> list[Message]:
+    """
+    对提取的实体进行分类
+    
+    用途: 根据实体类型定义对已提取的实体进行分类
+    输入:
+        context['previous_episodes']: 历史消息列表
+        context['episode_content']: 当前消息内容
+        context['extracted_entities']: 已提取的实体列表
+        context['entity_types']: 实体类型定义列表
+    输出: Message 列表，包含系统提示和用户提示
+    使用场景: 实体类型分类和验证
+    """
     sys_prompt = """You are an AI assistant that classifies entity nodes given the context from which they were extracted"""
 
     user_prompt = f"""
@@ -253,6 +311,17 @@ def classify_nodes(context: dict[str, Any]) -> list[Message]:
 
 
 def extract_attributes(context: dict[str, Any]) -> list[Message]:
+    """
+    从消息中提取实体属性
+    
+    用途: 根据消息内容更新实体的属性值
+    输入:
+        context['previous_episodes']: 历史消息列表
+        context['episode_content']: 当前消息内容
+        context['node']: 实体信息（包含属性定义）
+    输出: Message 列表，包含系统提示和用户提示
+    使用场景: 实体属性填充和更新
+    """
     return [
         Message(
             role='system',
@@ -282,6 +351,17 @@ def extract_attributes(context: dict[str, Any]) -> list[Message]:
 
 
 def extract_summary(context: dict[str, Any]) -> list[Message]:
+    """
+    生成实体摘要
+    
+    用途: 从消息中提取并生成实体的摘要信息（< 250 字符）
+    输入:
+        context['previous_episodes']: 历史消息列表
+        context['episode_content']: 当前消息内容
+        context['node']: 实体信息（包含现有摘要）
+    输出: Message 列表，包含系统提示和用户提示
+    使用场景: 实体摘要生成和更新
+    """
     return [
         Message(
             role='system',

@@ -56,6 +56,16 @@ class Versions(TypedDict):
 
 
 def edge(context: dict[str, Any]) -> list[Message]:
+    """
+    判断新边是否为现有边的重复
+    
+    用途: 判断新提取的关系是否与现有关系重复
+    输入:
+        context['related_edges']: 现有边列表
+        context['extracted_edges']: 新提取的边
+    输出: Message 列表，包含系统提示和用户提示
+    使用场景: 单个边去重判断
+    """
     return [
         Message(
             role='system',
@@ -87,6 +97,15 @@ def edge(context: dict[str, Any]) -> list[Message]:
 
 
 def edge_list(context: dict[str, Any]) -> list[Message]:
+    """
+    对边列表进行去重
+    
+    用途: 对关系列表进行去重，保留唯一的事实
+    输入:
+        context['edges']: 边列表（包含 UUID 和事实描述）
+    输出: Message 列表，包含系统提示和用户提示
+    使用场景: 边列表去重
+    """
     return [
         Message(
             role='system',
@@ -115,6 +134,18 @@ def edge_list(context: dict[str, Any]) -> list[Message]:
 
 
 def resolve_edge(context: dict[str, Any]) -> list[Message]:
+    """
+    判断边的重复和矛盾关系
+    
+    用途: 综合判断新边与现有边的重复关系、矛盾关系，并进行关系类型分类
+    输入:
+        context['edge_types']: 关系类型定义列表
+        context['existing_edges']: 现有边列表
+        context['edge_invalidation_candidates']: 边失效候选列表
+        context['new_edge']: 新提取的边
+    输出: Message 列表，包含系统提示和用户提示
+    使用场景: 边去重、矛盾检测和类型分类
+    """
     return [
         Message(
             role='system',

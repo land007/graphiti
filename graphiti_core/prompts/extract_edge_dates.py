@@ -41,6 +41,18 @@ class Versions(TypedDict):
 
 
 def v1(context: dict[str, Any]) -> list[Message]:
+    """
+    从消息中提取关系的时间信息
+    
+    用途: 从消息和关系事实中提取关系的建立时间（valid_at）和结束时间（invalid_at）
+    输入:
+        context['previous_episodes']: 历史消息列表
+        context['current_episode']: 当前消息
+        context['reference_timestamp']: 参考时间戳（ISO 8601 格式）
+        context['edge_fact']: 关系事实描述
+    输出: Message 列表，包含系统提示和用户提示
+    使用场景: 关系时间信息提取，支持相对时间解析
+    """
     return [
         Message(
             role='system',

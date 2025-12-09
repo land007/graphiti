@@ -47,6 +47,15 @@ class Versions(TypedDict):
 
 
 def summarize_pair(context: dict[str, Any]) -> list[Message]:
+    """
+    合并两个摘要为一个
+    
+    用途: 将两个实体摘要合并为一个简洁的摘要（< 250 字符）
+    输入:
+        context['node_summaries']: 两个节点摘要的列表
+    输出: Message 列表，包含系统提示和用户提示
+    使用场景: 摘要合并，用于实体去重后的摘要整合
+    """
     return [
         Message(
             role='system',
@@ -67,6 +76,19 @@ def summarize_pair(context: dict[str, Any]) -> list[Message]:
 
 
 def summarize_context(context: dict[str, Any]) -> list[Message]:
+    """
+    从消息上下文中生成实体摘要和属性
+    
+    用途: 基于消息上下文生成实体的摘要信息，并提取实体属性值
+    输入:
+        context['previous_episodes']: 历史消息列表
+        context['episode_content']: 当前消息内容
+        context['node_name']: 实体名称
+        context['node_summary']: 实体现有摘要（上下文）
+        context['attributes']: 属性定义列表
+    输出: Message 列表，包含系统提示和用户提示
+    使用场景: 实体摘要生成和属性提取
+    """
     return [
         Message(
             role='system',
@@ -106,6 +128,15 @@ def summarize_context(context: dict[str, Any]) -> list[Message]:
 
 
 def summary_description(context: dict[str, Any]) -> list[Message]:
+    """
+    生成摘要的描述
+    
+    用途: 为摘要内容生成一个单句描述，说明摘要包含的信息类型
+    输入:
+        context['summary']: 摘要内容
+    输出: Message 列表，包含系统提示和用户提示
+    使用场景: 摘要描述生成
+    """
     return [
         Message(
             role='system',

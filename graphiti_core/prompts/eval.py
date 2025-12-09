@@ -62,6 +62,15 @@ class Versions(TypedDict):
 
 
 def query_expansion(context: dict[str, Any]) -> list[Message]:
+    """
+    将问题重写为更适合数据库检索的查询
+    
+    用途: 将用户问题优化为更适合知识图谱检索的查询语句
+    输入:
+        context['query']: 原始问题
+    输出: Message 列表，包含系统提示和用户提示
+    使用场景: 查询优化，提高检索准确性
+    """
     sys_prompt = """You are an expert at rephrasing questions into queries used in a database retrieval system"""
 
     user_prompt = f"""
@@ -78,6 +87,17 @@ def query_expansion(context: dict[str, Any]) -> list[Message]:
 
 
 def qa_prompt(context: dict[str, Any]) -> list[Message]:
+    """
+    基于实体摘要和事实回答问题
+    
+    用途: 使用实体摘要和事实信息生成问题的答案
+    输入:
+        context['entity_summaries']: 实体摘要列表
+        context['facts']: 事实列表
+        context['query']: 问题
+    输出: Message 列表，包含系统提示和用户提示
+    使用场景: 问答生成，基于知识图谱的问答
+    """
     sys_prompt = """You are Alice and should respond to all questions from the first person perspective of Alice"""
 
     user_prompt = f"""
@@ -100,6 +120,17 @@ def qa_prompt(context: dict[str, Any]) -> list[Message]:
 
 
 def eval_prompt(context: dict[str, Any]) -> list[Message]:
+    """
+    评估答案是否正确
+    
+    用途: 判断回答是否与标准答案匹配，评估答案质量
+    输入:
+        context['query']: 问题
+        context['answer']: 标准答案
+        context['response']: 待评估的回答
+    输出: Message 列表，包含系统提示和用户提示
+    使用场景: 答案质量评估，用于系统测试和优化
+    """
     sys_prompt = (
         """You are a judge that determines if answers to questions match a gold standard answer"""
     )
@@ -125,6 +156,18 @@ def eval_prompt(context: dict[str, Any]) -> list[Message]:
 
 
 def eval_add_episode_results(context: dict[str, Any]) -> list[Message]:
+    """
+    评估基线提取和候选提取的质量
+    
+    用途: 比较基线提取结果和候选提取结果的质量，判断哪个更好
+    输入:
+        context['previous_messages']: 历史消息列表
+        context['message']: 当前消息
+        context['baseline']: 基线提取结果
+        context['candidate']: 候选提取结果
+    输出: Message 列表，包含系统提示和用户提示
+    使用场景: 提取质量评估，用于提示词优化和系统改进
+    """
     sys_prompt = """You are a judge that determines whether a baseline graph building result from a list of messages is better
         than a candidate graph building result based on the same messages."""
 

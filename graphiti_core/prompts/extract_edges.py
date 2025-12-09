@@ -65,6 +65,20 @@ class Versions(TypedDict):
 
 
 def edge(context: dict[str, Any]) -> list[Message]:
+    """
+    从消息中提取实体间的关系（边）
+    
+    用途: 从消息中提取实体之间的事实关系，包括时间信息
+    输入:
+        context['edge_types']: 关系类型定义列表
+        context['previous_episodes']: 历史消息列表
+        context['episode_content']: 当前消息内容
+        context['nodes']: 实体列表
+        context['reference_time']: 参考时间（ISO 8601 格式）
+        context['custom_prompt']: 自定义提示词（可选）
+    输出: Message 列表，包含系统提示和用户提示
+    使用场景: 关系提取，支持时间信息提取
+    """
     return [
         Message(
             role='system',
@@ -137,6 +151,18 @@ You may use information from the PREVIOUS MESSAGES only to disambiguate referenc
 
 
 def reflexion(context: dict[str, Any]) -> list[Message]:
+    """
+    检查是否有遗漏的关系未提取（反思机制）
+    
+    用途: 检查关系提取的完整性，找出可能遗漏的关系
+    输入:
+        context['previous_episodes']: 历史消息列表
+        context['episode_content']: 当前消息内容
+        context['nodes']: 已提取的实体列表
+        context['extracted_facts']: 已提取的关系列表
+    输出: Message 列表，包含系统提示和用户提示
+    使用场景: 关系提取质量检查和改进
+    """
     sys_prompt = """You are an AI assistant that determines which facts have not been extracted from the given context"""
 
     user_prompt = f"""
@@ -165,6 +191,17 @@ determine if any facts haven't been extracted.
 
 
 def extract_attributes(context: dict[str, Any]) -> list[Message]:
+    """
+    从消息中提取关系的属性
+    
+    用途: 根据消息内容更新关系的属性值
+    输入:
+        context['episode_content']: 当前消息内容
+        context['reference_time']: 参考时间
+        context['fact']: 关系信息（包含属性定义）
+    输出: Message 列表，包含系统提示和用户提示
+    使用场景: 关系属性填充和更新
+    """
     return [
         Message(
             role='system',
